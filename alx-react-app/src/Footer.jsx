@@ -1,3 +1,4 @@
+// src/Footer.jsx
 function Footer() {
     return (
         <footer>
