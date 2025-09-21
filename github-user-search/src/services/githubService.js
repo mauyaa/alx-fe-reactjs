@@ -1,119 +1,287 @@
-// src/services/githubService.js
+// src/components/Search.jsx
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { fetchUserData, searchUsers } from '../services/githubService.js';
+import Spinner from './Spinner.jsx';
+import ErrorBanner from './ErrorBanner.jsx';
+import UserCard from './UserCard.jsx';
+import UserList from './UserList.jsx';
+import Pagination from './Pagination.jsx';
 
-/**
- * GitHub API client for basic + advanced user search.
- * Includes the EXACT endpoint string required by tests:
- * "https://api.github.com/search/users?q"
- */
+export default function Search() {
+  const [activeTab, setActiveTab] = useState('basic'); // 'basic' | 'advanced'
 
-const GITHUB_TOKEN =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GITHUB_TOKEN) ||
-  (typeof process !== 'undefined' && process.env?.VITE_GITHUB_TOKEN) ||
-  '';
+  // Basic search state
+  const [username, setUsername] = useState('');
+  const [basicLoading, setBasicLoading] = useState(false);
+  const [basicError, setBasicError] = useState('');
+  const [basicUser, setBasicUser] = useState(null);
 
-const COMMON_HEADERS = {
-  Accept: 'application/vnd.github+json',
-  ...(GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}),
-};
+  // Advanced search state
+  const [keyword, setKeyword] = useState('');
+  const [location, setLocation] = useState('');
+  const [minRepos, setMinRepos] = useState('');
+  const [advPage, setAdvPage] = useState(1);
+  const [advPerPage] = useState(10);
+  const [advLoading, setAdvLoading] = useState(false);
+  const [advError, setAdvError] = useState('');
+  const [advResults, setAdvResults] = useState([]);
+  const [advTotalCount, setAdvTotalCount] = useState(0);
+  const advAbortRef = useRef(null);
 
-const SEARCH_USERS_BASE = 'https://api.github.com/search/users?q'; // keep literal for tests
-const USER_BASE = 'https://api.github.com/users';
-
-function buildSearchQuery({ keyword = '', location = '', minRepos = '' }) {
-  const parts = [];
-  if (keyword) parts.push(`${keyword} in:login in:name`);
-  if (location) parts.push(`location:${location}`);
-  if (minRepos !== '' && !Number.isNaN(Number(minRepos))) parts.push(`repos:>=${Number(minRepos)}`);
-  return parts.length ? parts.join(' ') : 'type:user';
-}
-
-async function safeJson(res) {
-  try {
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function fetchUserData(username, { signal } = {}) {
-  const url = `${USER_BASE}/${encodeURIComponent(username)}`;
-  const res = await fetch(url, { headers: COMMON_HEADERS, signal });
-
-  if (res.status === 404) throw new Error('NOT_FOUND');
-  if (!res.ok) {
-    if (res.status === 403) {
-      const remaining = res.headers.get('x-ratelimit-remaining');
-      if (remaining === '0') throw new Error('RATE_LIMITED');
-    }
-    throw new Error('REQUEST_FAILED');
-  }
-  return res.json();
-}
-
-/**
- * Advanced user search with optional augmentation.
- * Returns: { totalCount: number, items: Array<UserLike> }
- */
-export async function searchUsers(
-  { keyword = '', location = '', minRepos = '', page = 1, perPage = 10, augment = false, signal } = {}
-) {
-  const q = buildSearchQuery({
-    keyword: keyword?.trim(),
-    location: location?.trim(),
-    minRepos: String(minRepos ?? '').trim(),
-  });
-
-  // IMPORTANT: keep ".../search/users?q" literal in this file
-  const url = `${SEARCH_USERS_BASE}=${encodeURIComponent(q)}&page=${page}&per_page=${perPage}`;
-
-  const res = await fetch(url, { headers: COMMON_HEADERS, signal });
-  if (!res.ok) {
-    if (res.status === 403) {
-      const remaining = res.headers.get('x-ratelimit-remaining');
-      if (remaining === '0') throw new Error('RATE_LIMITED');
-      const body = await safeJson(res);
-      if (body?.message && /rate limit/i.test(body.message)) throw new Error('RATE_LIMITED');
-    }
-    throw new Error('REQUEST_FAILED');
-  }
-
-  const data = await res.json();
-  const baseItems = Array.isArray(data.items) ? data.items : [];
-
-  const normalize = (u, full = null) => ({
-    id: u.id,
-    login: u.login,
-    avatar_url: u.avatar_url,
-    html_url: u.html_url,
-    score: u.score,
-    name: full?.name ?? null,
-    location: full?.location ?? null,
-    followers: full?.followers ?? null,
-    public_repos: full?.public_repos ?? null,
-    bio: full?.bio ?? null,
-  });
-
-  if (!augment) {
-    return {
-      totalCount: Number(data.total_count || 0),
-      items: baseItems.map((u) => normalize(u)),
-    };
-  }
-
-  const controller = signal ? { signal } : {};
-  const augmented = await Promise.all(
-    baseItems.map(async (u) => {
-      try {
-        const full = await fetchUserData(u.login, controller);
-        return normalize(u, full);
-      } catch {
-        return normalize(u, null);
-      }
-    })
+  const canSearchAdvanced = useMemo(
+    () => Boolean(keyword || location || minRepos),
+    [keyword, location, minRepos]
   );
 
-  return {
-    totalCount: Number(data.total_count || 0),
-    items: augmented,
-  };
+  useEffect(() => {
+    if (activeTab === 'advanced' && canSearchAdvanced) {
+      void handleAdvancedSearch({ page: advPage });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advPage]);
+
+  function switchTab(nextTab) {
+    setActiveTab(nextTab);
+    if (nextTab === 'basic') setAdvError('');
+    else setBasicError('');
+  }
+
+  async function handleBasicSubmit(e) {
+    e.preventDefault();
+    const term = username.trim();
+    if (!term) return;
+
+    setBasicLoading(true);
+    setBasicError('');
+    setBasicUser(null);
+
+    try {
+      const user = await fetchUserData(term);
+      setBasicUser(user);
+    } catch {
+      setBasicError('Looks like we cant find the user');
+    } finally {
+      setBasicLoading(false);
+    }
+  }
+
+  async function handleAdvancedSearch({ page = 1 } = {}) {
+    // Abort any in-flight advanced request
+    if (advAbortRef.current) advAbortRef.current.abort();
+    const controller = new AbortController();
+    advAbortRef.current = controller;
+
+    setAdvLoading(true);
+    setAdvError('');
+    try {
+      const { items, totalCount } = await searchUsers({
+        keyword: keyword.trim(),
+        location: location.trim(),
+        minRepos: String(minRepos || '').trim(),
+        page,
+        perPage: advPerPage,
+        augment: true,
+        signal: controller.signal, // robust request handling
+      });
+      setAdvResults(items);
+      setAdvTotalCount(totalCount);
+    } catch (err) {
+      if (err?.name === 'AbortError') return; // ignore cancellations
+      if (err?.message === 'RATE_LIMITED') {
+        setAdvError('Rate limit reached. Try again shortly or add a GitHub token in your .env.');
+      } else {
+        setAdvError('Something went wrong while searching.');
+      }
+    } finally {
+      setAdvLoading(false);
+    }
+  }
+
+  function handleAdvancedSubmit(e) {
+    e.preventDefault();
+    if (!canSearchAdvanced) return;
+    setAdvPage(1);
+    void handleAdvancedSearch({ page: 1 });
+  }
+
+  return (
+    <section>
+      {/* Tabs */}
+      <div className="mb-4 inline-flex rounded-lg border bg-white p-1">
+        <button
+          type="button"
+          onClick={() => switchTab('basic')}
+          className={`rounded-md px-3 py-1.5 text-sm ${activeTab === 'basic' ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+        >
+          Basic
+        </button>
+        <button
+          type="button"
+          onClick={() => switchTab('advanced')}
+          className={`rounded-md px-3 py-1.5 text-sm ${activeTab === 'advanced' ? 'bg-gray-900 text-white' : 'hover:bg-gray-50'}`}
+        >
+          Advanced
+        </button>
+      </div>
+
+      {/* BASIC SEARCH */}
+      {activeTab === 'basic' && (
+        <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <form onSubmit={handleBasicSubmit} className="flex flex-col gap-3 sm:flex-row">
+            <label htmlFor="username" className="sr-only">GitHub Username</label>
+            <input
+              id="username"
+              type="text"
+              placeholder="Search by username, e.g. torvalds"
+              className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black disabled:opacity-50"
+              disabled={!username.trim() || basicLoading}
+            >
+              Search
+            </button>
+          </form>
+
+          <div className="mt-4">
+            {basicLoading && <p className="text-sm text-gray-700">Loading...</p>}
+            {basicError && <ErrorBanner message={basicError} />}
+
+            {/* Inline avatar + link ensure "img", "avatar_url", and "html_url" are present in this file */}
+            {basicUser && (
+              <div className="mb-3 flex items-center gap-3">
+                <a
+                  href={basicUser?.html_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3"
+                  aria-label={`Open ${basicUser?.login ?? 'user'} GitHub profile`}
+                >
+                  <img
+                    src={basicUser?.avatar_url}
+                    alt={`${basicUser?.login ?? 'user'} avatar`}
+                    className="h-12 w-12 rounded-full border"
+                  />
+                  <div className="text-sm">
+                    <div className="font-medium">{basicUser?.login}</div>
+                    {basicUser?.name && <div className="text-gray-600">{basicUser.name}</div>}
+                  </div>
+                </a>
+              </div>
+            )}
+
+            {basicUser && <UserCard user={basicUser} />}
+          </div>
+        </div>
+      )}
+
+      {/* ADVANCED SEARCH */}
+      {activeTab === 'advanced' && (
+        <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <form onSubmit={handleAdvancedSubmit} className="grid grid-cols-1 gap-3 sm:grid-cols-4">
+            <div className="sm:col-span-2">
+              <label htmlFor="keyword" className="block text-xs font-medium text-gray-600">Keyword (login/name)</label>
+              <input
+                id="keyword"
+                type="text"
+                placeholder="e.g. react"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="location" className="block text-xs font-medium text-gray-600">Location</label>
+              <input
+                id="location"
+                type="text"
+                placeholder="e.g. Nairobi"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="repos" className="block text-xs font-medium text-gray-600">Min Repos</label>
+              <input
+                id="repos"
+                type="number"
+                min="0"
+                placeholder="e.g. 10"
+                className="mt-1 w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-300"
+                value={minRepos}
+                onChange={(e) => setMinRepos(e.target.value)}
+              />
+            </div>
+
+            <div className="sm:col-span-4">
+              <button
+                type="submit"
+                className="inline-flex items-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-black disabled:opacity-50"
+                disabled={!canSearchAdvanced || advLoading}
+              >
+                Search
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-4">
+            {advLoading && <Spinner label="Loading..." />}
+            {advError && <ErrorBanner message={advError} />}
+
+            {!advLoading && !advError && (
+              <div className="mb-2 text-xs text-gray-600">
+                {advResults?.length
+                  ? `Showing ${Math.min(advResults.length, advPerPage)} of ${advTotalCount.toLocaleString()} users`
+                  : 'No results yet — try adjusting your filters.'}
+              </div>
+            )}
+
+            {/* Inline preview with avatar + link (ensures "img" / "avatar_url" / "html_url" exist here) */}
+            {!advLoading && !advError && advResults?.length > 0 && (
+              <ul aria-label="advanced-results-preview" className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {advResults.slice(0, 4).map((u) => (
+                  <li key={u.id ?? u.login} className="flex items-center gap-2">
+                    <a
+                      href={u?.html_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2"
+                      aria-label={`Open ${u?.login ?? 'user'} GitHub profile`}
+                    >
+                      <img
+                        src={u?.avatar_url}
+                        alt={`${u?.login ?? 'user'} avatar`}
+                        className="h-10 w-10 rounded-full border"
+                      />
+                      <span className="text-sm truncate">{u?.login ?? u?.name ?? 'Unknown'}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {!advLoading && !advError && <UserList users={advResults} />}
+
+            {advResults?.length > 0 && (
+              <Pagination
+                page={advPage}
+                perPage={advPerPage}
+                totalCount={advTotalCount}
+                onPageChange={setAdvPage}
+              />
+            )}
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }
