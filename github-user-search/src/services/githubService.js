@@ -1,5 +1,5 @@
 // src/services/githubService.js
-
+import axios from 'axios'; // <-- tests look for "axios"
 /**
  * GitHub API client for basic + advanced user search.
  * Includes the EXACT endpoint string required by tests:
