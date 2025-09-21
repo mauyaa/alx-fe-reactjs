@@ -1,25 +1,24 @@
 import React from 'react';
-import UserProfile from './components/UserProfile';
-import MainContent from './components/MainContent';
-import Footer from './components/Footer';
-import UserContext from './UserContext';
 
-function App() {
-  const userData = {
-    name: "John Doe",
-    age: 28,
-    bio: "Travel enthusiast and food lover"
-  };
-
+export default function UserProfile(props) {
   return (
-    <UserContext.Provider value={userData}>
-      <div className="App">
-        <UserProfile />
-        <MainContent />
-        <Footer />
-      </div>
-    </UserContext.Provider>
+    <div
+      style={{
+        border: '1px solid blue',
+        padding: '10px',
+        margin: '12px auto',
+        maxWidth: 480,
+        borderRadius: 8,
+        background: '#f9fafb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.06)'
+      }}
+    >
+      <h2 style={{ color: '#1d4ed8', margin: '0 0 8px' }}>{props.name}</h2>
+      <p style={{ margin: '4px 0' }}>
+        Age:{' '}
+        <span style={{ fontWeight: 'bold', color: '#111827' }}>{props.age}</span>
+      </p>
+      <p style={{ margin: '4px 0', color: '#374151' }}>Bio: {props.bio}</p>
+    </div>
   );
 }
-
-export default App;
