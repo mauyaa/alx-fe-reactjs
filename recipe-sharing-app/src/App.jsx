@@ -1,6 +1,9 @@
-import AddRecipeForm from './components/AddRecipeForm.jsx';
-import RecipeList from './components/RecipeList.jsx';
-
+import { Routes, Route, Link } from 'react-router-dom'; // Import routing components :cite[3]
+import RecipeList from './components/RecipeList';
+import AddRecipeForm from './components/AddRecipeForm';
+import RecipeDetail from './components/RecipeDetail';
+import EditRecipeForm from './components/EditRecipeForm';
+import DeleteRecipeButton from './components/DeleteRecipeButton
 export default function App() {
   return (
     <div style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Helvetica Neue, Arial', padding: 20 }}>
