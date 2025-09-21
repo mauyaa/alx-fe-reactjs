@@ -1,15 +1,25 @@
-import { useContext } from 'react';
-import UserContext from './UserContext';
+import React from 'react';
+import UserProfile from './components/UserProfile';
+import MainContent from './components/MainContent';
+import Footer from './components/Footer';
+import { UserContext } from './UserContext';
 
-function UserDetails() {
-  const userData = useContext(UserContext);
+function App() {
+  const userData = {
+    name: "John Doe",
+    age: 28,
+    bio: "Travel enthusiast and food lover"
+  };
 
   return (
-    <div>
-      <p>Name: {userData.name}</p>
-      <p>Email: {userData.email}</p>
-    </div>
+    <UserContext.Provider value={userData}>
+      <div className="App">
+        <UserProfile />
+        <MainContent />
+        <Footer />
+      </div>
+    </UserContext.Provider>
   );
 }
 
-export default UserDetails;
+export default App;
