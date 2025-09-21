@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function MainContent() {
   const cities = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru'];
 
@@ -27,7 +29,7 @@ export default function MainContent() {
           borderRadius: 6
         }}
       >
-        Explore culture, food, and tech scenes across Kenya’s vibrant cities.
+        Explore culture, food, and tech scenes across Kenya's vibrant cities.
       </div>
     </main>
   );
