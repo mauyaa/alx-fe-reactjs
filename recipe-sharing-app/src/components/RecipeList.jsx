@@ -1,49 +1,100 @@
-import useRecipeStore from '../store/recipeStore.js';
+import { Link } from 'react-router-dom';
+import useRecipeStore from './recipeStore';
 
-export default function RecipeList() {
-  const recipes = useRecipeStore((s) => s.recipes);
-  const removeRecipe = useRecipeStore((s) => s.removeRecipe);
+const RecipeList = () => {
+  const { recipes } = useRecipeStore();
 
-  if (!recipes.length) {
+  if (recipes.length === 0) {
     return (
-      <section style={{ textAlign: 'center', color: '#6b7280' }}>
-        <p>No recipes yet. Add one above!</p>
-      </section>
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        <h2>No recipes yet!</h2>
+        <p>Get started by adding your first recipe.</p>
+        <Link 
+          to="/add"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '4px'
+          }}
+        >
+          Add Your First Recipe
+        </Link>
+      </div>
     );
   }
 
-  const card = { border: '1px solid #e5e7eb', padding: 16, borderRadius: 8, background: '#fff' };
-  const container = { display: 'grid', gap: 12, maxWidth: 900, margin: '0 auto' };
-
   return (
-    <section style={{ marginTop: 8 }}>
-      <h2 style={{ textAlign: 'center' }}>Recipes</h2>
-      <div style={container}>
-        {recipes.map((r) => (
-          <article key={r.id} style={card}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0 }}>{r.title}</h3>
-              <button
-                onClick={() => removeRecipe(r.id)}
-                style={{ padding: '6px 10px', borderRadius: 6, cursor: 'pointer' }}
-                aria-label={`Delete ${r.title}`}
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2>Your Recipes</h2>
+        <Link 
+          to="/add"
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '4px'
+          }}
+        >
+          Add New Recipe
+        </Link>
+      </div>
+
+      <div style={{ display: 'grid', gap: '20px' }}>
+        {recipes.map((recipe) => (
+          <div key={recipe.id} style={{ border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+            <h3>{recipe.title}</h3>
+            <p style={{ marginBottom: '15px' }}>
+              <strong>Ingredients:</strong> {recipe.ingredients.substring(0, 100)}...
+            </p>
+            <div>
+              <Link 
+                to={`/recipe/${recipe.id}`}
+                style={{
+                  marginRight: '10px',
+                  padding: '6px 12px',
+                  backgroundColor: '#2196F3',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px'
+                }}
+              >
+                View Details
+              </Link>
+              <Link 
+                to={`/edit/${recipe.id}`}
+                style={{
+                  marginRight: '10px',
+                  padding: '6px 12px',
+                  backgroundColor: '#FF9800',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px'
+                }}
+              >
+                Edit
+              </Link>
+              <Link 
+                to={`/delete/${recipe.id}`}
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px'
+                }}
               >
                 Delete
-              </button>
-            </header>
-
-            <section style={{ marginTop: 8 }}>
-              <strong>Ingredients</strong>
-              <div style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>{r.ingredients}</div>
-            </section>
-
-            <section style={{ marginTop: 8 }}>
-              <strong>Instructions</strong>
-              <div style={{ whiteSpace: 'pre-wrap', marginTop: 4 }}>{r.instructions}</div>
-            </section>
-          </article>
+              </Link>
+            </div>
+          </div>
         ))}
       </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default RecipeList;
