@@ -2,8 +2,7 @@ import { create } from 'zustand';
 
 const useRecipeStore = create((set) => ({
   recipes: [],
-  // Add setRecipes function
-  setRecipes: (newRecipes) => set({ recipes: newRecipes }),
+  // Add recipe
   addRecipe: (recipe) =>
     set((state) => ({
       recipes: [
@@ -16,10 +15,31 @@ const useRecipeStore = create((set) => ({
         },
       ],
     })),
+  // Update recipe
+  updateRecipe: (id, updatedRecipe) =>
+    set((state) => ({
+      recipes: state.recipes.map((recipe) =>
+        recipe.id === id
+          ? {
+              ...recipe,
+              title: updatedRecipe.title?.trim() || recipe.title,
+              ingredients: updatedRecipe.ingredients?.trim() || recipe.ingredients,
+              instructions: updatedRecipe.instructions?.trim() || recipe.instructions,
+            }
+          : recipe
+      ),
+    })),
+  // Delete recipe
+  deleteRecipe: (id) =>
+    set((state) => ({
+      recipes: state.recipes.filter((recipe) => recipe.id !== id),
+    })),
+  // Remove recipe (alias for delete)
   removeRecipe: (id) =>
     set((state) => ({
-      recipes: state.recipes.filter((r) => r.id !== id),
+      recipes: state.recipes.filter((recipe) => recipe.id !== id),
     })),
+  // Clear all recipes
   clearRecipes: () => set({ recipes: [] }),
 }));
 
