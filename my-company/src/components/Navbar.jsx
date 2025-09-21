@@ -6,7 +6,7 @@ export default function Navbar() {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '12px 16px',
-    background: '#1f2937',
+    backgroundColor: '#1f2937', // Changed from 'background' to 'backgroundColor'
     color: 'white'
   };
 
@@ -17,7 +17,7 @@ export default function Navbar() {
     textDecoration: 'none',
     padding: '6px 8px',
     borderRadius: 6,
-    background: isActive ? 'rgba(52, 211, 153, 0.15)' : 'transparent'
+    backgroundColor: isActive ? 'rgba(52, 211, 153, 0.15)' : 'transparent' // Changed from 'background' to 'backgroundColor'
   });
 
   return (
