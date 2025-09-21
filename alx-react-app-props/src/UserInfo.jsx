@@ -1,5 +1,7 @@
-import UserDetails from './UserDetails.jsx';
+import UserDetails from './UserDetails';
 
-export default function UserInfo() {
+function UserInfo() {
   return <UserDetails />;
 }
+
+export default UserInfo;
