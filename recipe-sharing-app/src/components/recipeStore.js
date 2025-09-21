@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 const useRecipeStore = create((set) => ({
   recipes: [],
+  // Add setRecipes function
+  setRecipes: (newRecipes) => set({ recipes: newRecipes }),
   addRecipe: (recipe) =>
     set((state) => ({
       recipes: [
