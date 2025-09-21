@@ -1,10 +1,11 @@
-/* Expects props: name, age, bio */
+import React from 'react';
+
 export default function UserProfile(props) {
   return (
     <div
       style={{
-        border: '1px solid #d1d5db',
-        padding: '12px',
+        border: '1px solid blue',
+        padding: '10px',
         margin: '12px auto',
         maxWidth: 480,
         borderRadius: 8,
