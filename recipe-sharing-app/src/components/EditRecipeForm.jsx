@@ -21,7 +21,7 @@ const EditRecipeForm = () => {
   }, [recipe]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Added event.preventDefault() to prevent default form submission
     if (!title.trim() || !ingredients.trim() || !instructions.trim()) {
       alert('Please fill in all fields');
       return;
@@ -31,9 +31,13 @@ const EditRecipeForm = () => {
     navigate(`/recipe/${id}`);
   };
 
+  const handleCancel = () => {
+    navigate(`/recipe/${id}`);
+  };
+
   if (!recipe) {
     return (
-      <div>
+      <div style={{ padding: '20px', textAlign: 'center' }}>
         <h2>Recipe Not Found</h2>
         <button onClick={() => navigate('/')}>Back to Recipes</button>
       </div>
@@ -96,7 +100,7 @@ const EditRecipeForm = () => {
           </button>
           <button 
             type="button"
-            onClick={() => navigate(`/recipe/${id}`)}
+            onClick={handleCancel}
             style={{
               padding: '10px 20px',
               backgroundColor: '#9e9e9e',
