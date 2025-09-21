@@ -29,7 +29,7 @@ export default function MainContent() {
           borderRadius: 6
         }}
       >
-        Explore culture, food, and tech scenes across Kenya's vibrant cities.
+        I love to visit New York, Paris, and Tokyo.
       </div>
     </main>
   );
