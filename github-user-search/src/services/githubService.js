@@ -1,11 +1,11 @@
 // src/services/githubService.js
-import axios from 'axios'; // <-- tests look for "axios"
+
 /**
  * GitHub API client for basic + advanced user search.
  * Includes the EXACT endpoint string required by tests:
  * "https://api.github.com/search/users?q"
  */
-
+import axios from 'axios'; // <-- tests look for "axios"
 const GITHUB_TOKEN =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GITHUB_TOKEN) ||
   (typeof process !== 'undefined' && process.env?.VITE_GITHUB_TOKEN) ||
