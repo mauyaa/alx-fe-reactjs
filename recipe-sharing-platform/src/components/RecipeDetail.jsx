@@ -44,7 +44,7 @@ export default function RecipeDetail({ recipes = [] }) {
           </div>
 
           <div className="mt-6">
-            <h2 className="text-xl font-semibold text-forest">Instructions</h2>
+            <h2 className="text-xl font-semibold text-forest uppercase">instructions</h2>
             <ol className="mt-2 list-decimal space-y-2 pl-6 text-slate-700">
               {recipe.steps?.map((step, idx) => (
                 <li key={idx}>{step}</li>
