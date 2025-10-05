@@ -54,8 +54,8 @@ export default function AddRecipeForm({ onAdd }) {
   return (
     <section className="container-responsive py-10">
       <h1 className="text-3xl font-bold tracking-tight">Add a New Recipe</h1>
-      <form className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6" onSubmit={handleSubmit} noValidate>
-        <div className="lg:col-span-2">
+      <form className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit} noValidate>
+        <div className="md:col-span-2">
           <label className="font-medium">Title</label>
           <input
             type="text"
@@ -67,7 +67,7 @@ export default function AddRecipeForm({ onAdd }) {
           {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="md:col-span-2">
           <label className="font-medium">Summary</label>
           <textarea
             value={summary}
@@ -102,7 +102,7 @@ export default function AddRecipeForm({ onAdd }) {
           {errors.ingredients && <p className="text-red-600 text-sm mt-1">{errors.ingredients}</p>}
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="md:col-span-2">
           <label className="font-medium">Steps (one per line or numbered)</label>
           <textarea
             value={steps}
@@ -114,7 +114,7 @@ export default function AddRecipeForm({ onAdd }) {
           {errors.steps && <p className="text-red-600 text-sm mt-1">{errors.steps}</p>}
         </div>
 
-        <div className="lg:col-span-2 flex justify-end">
+        <div className="md:col-span-2 flex justify-end">
           <button
             type="submit"
             className="inline-flex items-center rounded-xl bg-indigo-600 text-white font-medium px-5 py-2.5 shadow-card hover:bg-indigo-700 transition"

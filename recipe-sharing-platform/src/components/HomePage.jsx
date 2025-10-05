@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import RecipeCard from "./RecipeCard.jsx";
+import seedData from "../data.json";
 
-export default function HomePage({ recipes }) {
-  const [list, setList] = useState([]);
-  useEffect(() => setList(recipes), [recipes]);
+export default function HomePage({ recipes = [] }) {
+  const [list, setList] = useState(recipes.length ? recipes : seedData);
+  useEffect(() => {
+    setList(recipes.length ? recipes : seedData);
+  }, [recipes]);
 
   return (
     <section className="relative min-h-screen overflow-hidden py-16">
@@ -60,23 +63,21 @@ export default function HomePage({ recipes }) {
       />
 
       {/* content */}
-<div className="relative z-10 container-responsive">
-  <h1 className="text-4xl font-bold tracking-tight text-white">
-    Discover Recipes
-  </h1>
-  <p className="mt-3 text-lg text-white/90">
-    Browse community favorites and add your own!
-  </p>
+      <div className="container-responsive relative z-10">
+        <h1 className="text-4xl font-bold tracking-tight text-forest">Discover Recipes</h1>
+        <p className="mt-3 text-lg text-forest opacity-80">
+          Browse community favorites and add your own!
+        </p>
 
-  <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-    {list.map((r) => (
-      <RecipeCard key={r.id} recipe={r} />
-    ))}
-    {!list.length && (
-      <div className="col-span-full py-20 text-center text-white/70">
-        No recipes yet. Add one!
-      </div>
-    )}
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {list.map((r) => (
+            <RecipeCard key={r.id} recipe={r} />
+          ))}
+          {!list.length && (
+            <div className="col-span-full py-20 text-center text-forest opacity-70">
+              No recipes yet. Add one!
+            </div>
+          )}
         </div>
       </div>
     </section>

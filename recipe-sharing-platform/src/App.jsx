@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import HomePage from "./components/HomePage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
@@ -9,7 +9,6 @@ import seedData from "./data.json";
 export default function App() {
   const [recipes, setRecipes] = useState([]);
 
-  // Initialize from mock JSON (simulating fetch on mount)
   useEffect(() => {
     setRecipes(seedData);
   }, []);
@@ -21,13 +20,15 @@ export default function App() {
   };
 
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<HomePage recipes={recipes} />} />
-        <Route path="/recipe/:id" element={<RecipeDetail recipes={recipes} />} />
-        <Route path="/add" element={<AddRecipeForm onAdd={addRecipe} />} />
-        <Route path="*" element={<div className="container-responsive py-12">Page not found.</div>} />
-      </Routes>
-    </Layout>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<HomePage recipes={recipes} />} />
+          <Route path="/recipe/:id" element={<RecipeDetail recipes={recipes} />} />
+          <Route path="/add" element={<AddRecipeForm onAdd={addRecipe} />} />
+          <Route path="*" element={<div className="container-responsive py-12">Page not found.</div>} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
