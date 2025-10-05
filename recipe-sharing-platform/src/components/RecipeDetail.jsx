@@ -1,0 +1,50 @@
+import { useParams, Link } from "react-router-dom";
+
+export default function RecipeDetail({ recipes }) {
+  const { id } = useParams();
+  const recipe = recipes.find((r) => String(r.id) === String(id));
+
+  if (!recipe) {
+    return (
+      <section className="container-responsive py-10">
+        <p className="text-slate-500">Recipe not found.</p>
+        <Link to="/" className="text-indigo-600 font-medium">Back to home</Link>
+      </section>
+    );
+  }
+
+  return (
+    <section className="container-responsive py-10">
+      <Link to="/" className="text-indigo-600 font-medium">Back</Link>
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="lg:col-span-3">
+          <div className="overflow-hidden rounded-2xl shadow-card">
+            <img src={recipe.image} alt={recipe.title} className="w-full h-full object-cover" />
+          </div>
+        </div>
+        <div className="lg:col-span-2">
+          <h1 className="text-3xl font-bold tracking-tight">{recipe.title}</h1>
+          <p className="mt-2 text-slate-600">{recipe.summary}</p>
+
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold">Ingredients</h2>
+            <ul className="mt-2 list-disc pl-6 space-y-1 text-slate-700">
+              {recipe.ingredients?.map((ing, idx) => (
+                <li key={idx}>{ing}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold">Steps</h2>
+            <ol className="mt-2 list-decimal pl-6 space-y-2 text-slate-700">
+              {recipe.steps?.map((step, idx) => (
+                <li key={idx}>{step}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

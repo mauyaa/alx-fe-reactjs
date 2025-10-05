@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --forest: #1f4d3a;
+  --forest-deep: #173a2c;
+  --cream: #f2e6d8;
+}
+
+.bg-surface {
+  background: #fff;
+}
+
+.text-forest {
+  color: var(--forest-deep);
+}
+
+.text-cream {
+  color: var(--cream);
+}
+
+.btn-primary {
+  background: var(--forest);
+  color: #fff;
+}
+
+/* App-level primitives */
+.container-responsive {
+  @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+}

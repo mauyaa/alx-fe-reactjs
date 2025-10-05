@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "title": "Spaghetti Carbonara",
+    "summary": "A classic Italian pasta dish with eggs, cheese, bacon, and black pepper.",
+    "image": "https://images.unsplash.com/photo-1523986371872-9d3ba2e2a389?q=80&w=1200&auto=format&fit=crop",
+    "ingredients": [
+      "200g spaghetti",
+      "100g pancetta or bacon",
+      "2 eggs",
+      "50g Pecorino Romano (or Parmesan)",
+      "Freshly ground black pepper",
+      "Salt"
+    ],
+    "steps": [
+      "Cook spaghetti in salted boiling water until al dente.",
+      "Meanwhile, fry pancetta until crisp.",
+      "Whisk eggs and cheese together in a bowl.",
+      "Toss drained pasta with pancetta, remove from heat, then quickly mix in egg-cheese mixture.",
+      "Season generously with black pepper and serve."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Chicken Tikka Masala",
+    "summary": "Grilled chicken pieces in a creamy spiced tomato sauce.",
+    "image": "https://dantoombs.com/wp-content/uploads/2025/06/Chicken-tikka-masala-720x720.jpg",
+    "ingredients": [
+      "500g chicken breast, cubed",
+      "1 cup yogurt",
+      "2 tbsp tikka masala paste",
+      "1 onion, chopped",
+      "1 cup tomato puree",
+      "1/2 cup cream",
+      "Spices: garam masala, cumin, coriander, paprika",
+      "Salt, oil"
+    ],
+    "steps": [
+      "Marinate chicken in yogurt and masala paste for 1-2 hours.",
+      "Grill or pan-sear chicken until charred.",
+      "Saute onion and spices, add tomato puree and simmer.",
+      "Stir in cream and add chicken.",
+      "Simmer 10 minutes and serve with rice or naan."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Avocado Toast Deluxe",
+    "summary": "Toasted sourdough topped with smashed avocado, feta, and chili flakes.",
+    "image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=1200&auto=format&fit=crop",
+    "ingredients": [
+      "2 slices sourdough",
+      "1 ripe avocado",
+      "Feta cheese",
+      "Chili flakes",
+      "Lemon juice",
+      "Salt and pepper"
+    ],
+    "steps": [
+      "Toast bread.",
+      "Mash avocado with lemon, salt, pepper.",
+      "Spread on toast, top with feta and chili flakes."
+    ]
+  }
+]
