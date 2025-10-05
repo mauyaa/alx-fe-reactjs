@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RecipeCard from "./RecipeCard.jsx";
 import seedData from "../data.json";
@@ -71,9 +72,13 @@ export default function HomePage({ recipes = [] }) {
 
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((r) => (
-            <div key={r.id} className="group h-full transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01]">
+            <Link
+              key={r.id}
+              to={`/recipe/${r.id}`}
+              className="group block h-full transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01]"
+            >
               <RecipeCard recipe={r} />
-            </div>
+            </Link>
           ))}
           {!list.length && (
             <div className="col-span-full py-20 text-center text-forest opacity-70">
