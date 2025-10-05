@@ -71,7 +71,9 @@ export default function HomePage({ recipes = [] }) {
 
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((r) => (
-            <RecipeCard key={r.id} recipe={r} />
+            <div key={r.id} className="group h-full transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01]">
+              <RecipeCard recipe={r} />
+            </div>
           ))}
           {!list.length && (
             <div className="col-span-full py-20 text-center text-forest opacity-70">
