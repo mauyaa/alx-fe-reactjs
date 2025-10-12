@@ -1,30 +1,18 @@
+// src/App.jsx
 import { BrowserRouter, Routes, Route, Link, Navigate, Outlet, useParams } from "react-router-dom";
 import { useState } from "react";
+import Profile, { ProfileDetails, ProfileSettings } from "./components/Profile";
 
 function Home() { return <h2>Home</h2>; }
 function About() { return <h2>About</h2>; }
 
-// --- Profile (Nested)
-function Profile() { return (
-  <div>
-    <h2>Profile</h2>
-    <nav style={{ display:"flex", gap:8 }}>
-      <Link to="details">Details</Link>
-      <Link to="settings">Settings</Link>
-    </nav>
-    <Outlet />
-  </div>
-); }
-function ProfileDetails() { return <p>Profile details here</p>; }
-function ProfileSettings() { return <p>Profile settings here</p>; }
-
-// --- Dynamic: /posts/:postId
+// Dynamic route: /posts/:postId
 function Post() {
   const { postId } = useParams();
   return <h3>Post ID: {postId}</h3>;
 }
 
-// --- Fake auth & ProtectedRoute
+// Fake auth & ProtectedRoute
 function useAuth() {
   const [authed, setAuthed] = useState(() => !!localStorage.getItem("demo_authed"));
   const login = () => { localStorage.setItem("demo_authed", "1"); setAuthed(true); };
@@ -66,6 +54,7 @@ export default function App() {
 
           <Route path="/login" element={<Login onLogin={auth.login} />} />
 
+          {/* Protected nested routes */}
           <Route element={<ProtectedRoute authed={auth.authed} />}>
             <Route path="/profile" element={<Profile />}>
               <Route index element={<ProfileDetails />} />
@@ -74,6 +63,7 @@ export default function App() {
             </Route>
           </Route>
 
+          {/* Dynamic routing example */}
           <Route path="/posts/:postId" element={<Post />} />
 
           <Route path="*" element={<h2>Not Found</h2>} />
@@ -82,3 +72,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
+
