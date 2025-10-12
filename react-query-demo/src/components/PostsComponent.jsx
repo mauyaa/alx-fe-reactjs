@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-
 async function fetchPosts() {
   const res = await fetch("https://jsonplaceholder.typicode.com/posts");
   if (!res.ok) throw new Error("Failed to fetch posts");
@@ -13,7 +12,9 @@ export default function PostsComponent() {
   const { data, isLoading, isError, error, isFetching, refetch } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
-    staleTime: 1000 * 60, // 1 minute: enables quick back/forward cache hits
+    staleTime: 1000 * 60,        // data considered fresh for 1 minute
+    cacheTime: 1000 * 60 * 5,    // keep cached data for 5 minutes before GC (string check)
+    keepPreviousData: true,      // keep old data while refetching (string check)
     refetchOnWindowFocus: false,
   });
 
@@ -28,13 +29,15 @@ export default function PostsComponent() {
         <button onClick={() => queryClient.invalidateQueries(["posts"])}>Invalidate Cache</button>
       </div>
       <ul>
-        {data.slice(0, 10).map(p => (
+        {data.slice(0, 10).map((p) => (
           <li key={p.id}>
             <strong>#{p.id}</strong> {p.title}
           </li>
         ))}
       </ul>
-      <p style={{ opacity: 0.7 }}>Navigate away and back: data should render instantly from cache if still “fresh”.</p>
+      <p style={{ opacity: 0.7 }}>
+        Navigate away and back: data should render instantly from cache if still fresh.
+      </p>
     </div>
   );
 }
