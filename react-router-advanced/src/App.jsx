@@ -1,4 +1,4 @@
-import { Routes, Route, Link, Navigate, Outlet, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate, Outlet, useParams } from "react-router-dom";
 import { useState } from "react";
 
 function Home() { return <h2>Home</h2>; }
@@ -14,7 +14,7 @@ function Profile() { return (
     </nav>
     <Outlet />
   </div>
-);}
+); }
 function ProfileDetails() { return <p>Profile details here</p>; }
 function ProfileSettings() { return <p>Profile settings here</p>; }
 
@@ -48,35 +48,37 @@ function Login({ onLogin }) {
 export default function App() {
   const auth = useAuth();
   return (
-    <div style={{ padding: 16 }}>
-      <nav style={{ display:"flex", gap:12, marginBottom: 16 }}>
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-        <Link to="/profile">Profile (protected)</Link>
-        <Link to="/posts/42">Dynamic Post 42</Link>
-        <button onClick={auth.authed ? auth.logout : auth.login}>
-          {auth.authed ? "Logout" : "Quick Login"}
-        </button>
-      </nav>
+    <BrowserRouter>
+      <div style={{ padding: 16 }}>
+        <nav style={{ display:"flex", gap:12, marginBottom: 16 }}>
+          <Link to="/">Home</Link>
+          <Link to="/about">About</Link>
+          <Link to="/profile">Profile (protected)</Link>
+          <Link to="/posts/42">Dynamic Post 42</Link>
+          <button onClick={auth.authed ? auth.logout : auth.login}>
+            {auth.authed ? "Logout" : "Quick Login"}
+          </button>
+        </nav>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
 
-        <Route path="/login" element={<Login onLogin={auth.login} />} />
+          <Route path="/login" element={<Login onLogin={auth.login} />} />
 
-        <Route element={<ProtectedRoute authed={auth.authed} />}>
-          <Route path="/profile" element={<Profile />}>
-            <Route index element={<ProfileDetails />} />
-            <Route path="details" element={<ProfileDetails />} />
-            <Route path="settings" element={<ProfileSettings />} />
+          <Route element={<ProtectedRoute authed={auth.authed} />}>
+            <Route path="/profile" element={<Profile />}>
+              <Route index element={<ProfileDetails />} />
+              <Route path="details" element={<ProfileDetails />} />
+              <Route path="settings" element={<ProfileSettings />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route path="/posts/:postId" element={<Post />} />
+          <Route path="/posts/:postId" element={<Post />} />
 
-        <Route path="*" element={<h2>Not Found</h2>} />
-      </Routes>
-    </div>
+          <Route path="*" element={<h2>Not Found</h2>} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
