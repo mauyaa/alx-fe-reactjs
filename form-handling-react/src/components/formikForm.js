@@ -3,9 +3,9 @@ import * as Yup from "yup";
 import { useState } from "react";
 
 const schema = Yup.object({
-  username: Yup.string().min(2, "Too short").required("Username is required"),
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string().min(6, "Min 6 chars").required("Password is required"),
+  username: Yup.string().required("Username is required").min(2, "Too short"),
+  email: Yup.string().required("Email is required").email("Invalid email"),
+  password: Yup.string().required("Password is required").min(6, "Min 6 chars"),
 });
 
 export default function FormikRegistrationForm() {
@@ -14,7 +14,6 @@ export default function FormikRegistrationForm() {
   return (
     <div style={{ maxWidth: 420, margin: "2rem auto" }}>
       <h2>Register (Formik + Yup)</h2>
-
       <Formik
         initialValues={{ username: "", email: "", password: "" }}
         validationSchema={schema}
