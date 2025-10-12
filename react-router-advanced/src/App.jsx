@@ -12,6 +12,12 @@ function Post() {
   return <h3>Post ID: {postId}</h3>;
 }
 
+// 👇 Add a BlogPost component for /blog/:id
+function BlogPost() {
+  const { id } = useParams();
+  return <h3>BlogPost: {id}</h3>;
+}
+
 // Fake auth & ProtectedRoute
 function useAuth() {
   const [authed, setAuthed] = useState(() => !!localStorage.getItem("demo_authed"));
@@ -43,6 +49,8 @@ export default function App() {
           <Link to="/about">About</Link>
           <Link to="/profile">Profile (protected)</Link>
           <Link to="/posts/42">Dynamic Post 42</Link>
+          {/* Demo link for the new dynamic blog route */}
+          <Link to="/blog/hello-world">Blog: hello-world</Link>
           <button onClick={auth.authed ? auth.logout : auth.login}>
             {auth.authed ? "Logout" : "Quick Login"}
           </button>
@@ -63,8 +71,9 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* Dynamic routing example */}
+          {/* Dynamic routing examples */}
           <Route path="/posts/:postId" element={<Post />} />
+          <Route path="/blog/:id" element={<BlogPost />} />
 
           <Route path="*" element={<h2>Not Found</h2>} />
         </Routes>
@@ -72,4 +81,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
